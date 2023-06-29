@@ -25,10 +25,7 @@ app.use(fileUpload({
 db.connect();
 
 app.use(
-	cors({
-		origin:'https://study-notion-sarthak-roy.vercel.app/',
-		//credentials:true,
-	})
+	cors()
 )
 app.use((req, res, next) => {
 	res.setHeader('Access-Control-Allow-Origin', '*');
