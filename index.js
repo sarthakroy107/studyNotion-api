@@ -26,8 +26,8 @@ db.connect();
 
 app.use(
 	cors({
-		origin:"https://study-notion-sarthak-roy.vercel.app/",
-		credentials:true,
+		origin:'https://study-notion-sarthak-roy.vercel.app/',
+		//credentials:true,
 	})
 )
 app.use((req, res, next) => {
