@@ -1,39 +1,43 @@
+const mongoose = require('mongoose');
 const Course = require("../models/Course");
 const User = require("../models/User");
 const Tag = require("../models/Tags");
-const cloudinary = require("cloudinary");
+const Category = require("../models/Category")
+const { uploadImageToCloudinary } = require("../utilis/imageUploader");
 require("dotenv").config();
 
 //Create course
 exports.createCourse = async (req, res) => {
     try {
         //fetch data
-        const {coursename, coursedescription, whatWillyouLearn, price, tag} = req.body;
-
+        let { coursename, coursedescription, whatWillYouLearn, price, category } = req.body;
+        
         //fetch thumbmail
-        const tumbNail = req.files.thumbNailImage;
+        const tumbnail = req.files.thumbNailImage;
+
         //fetch user id from cookie
-        const userId = req.cookie.id;
+        const userId = req.user.id;
+        console.log("I'mm here")
         //find educator details from userId
         const educatorDetails = await User.findById(userId);
         if(!educatorDetails) {
             return res.status(404).json({
                 success: false,
-                message: "User not found"
+                message: "User not found, what the fuck"
             })
         }
         //check if th tag is valid or not
-        const tagDetails = await Tag.findById(tag);
-        if(!tagDetails) {
-            return res.status(404).json({
-                success: false,
-                message: "No matching tag found"
-            });
-        }
-
+        // const tagDetails = await Tag.findById(tag);
+        // if(!tagDetails) {
+        //     return res.status(404).json({
+        //         success: false,
+        //         message: "No matching tag found"
+        //     });
+        // }
         //Upload image to cloudinary
+        let thumbNailImageUrl
         try{
-            const thumbNailImage = await cloudinary.uploader.upload(tumbNail, process.env.THUMBNAIL_FOLDER);
+            thumbNailImageUrl = await uploadImageToCloudinary(tumbnail);
         }
         catch(err) {
             return res.status(500).json({
@@ -41,17 +45,25 @@ exports.createCourse = async (req, res) => {
                 message: "Image upload to cloudinary failed"
             })
         }
+        const categoryDetails = await Category.findById(category);
         //make entry to db
+        console.log(coursename)
+        console.log(coursedescription)
+        console.log(whatWillYouLearn)
+        console.log(price)
+        console.log("Category: " + categoryDetails._id)
+        console.log("Thumbnail: " + thumbNailImageUrl.secure_url)
+        console.log("Educator: " +  educatorDetails._id)
         const newCourse = await Course.create({
             coursename,
             coursedescription,
-            whatWillyouLearn,
-            price,
-            tag: tagDetails._id,
-            educator: userId,
+            whatWillYouLearn,
+            price: price,
+            educator: educatorDetails._id,
+            thumbnail: thumbNailImageUrl.secure_url,
+            category: categoryDetails._id,
 
         })
-
         //add course to User model
         await User.findByIdAndUpdate(userId, {
             $push: {
@@ -60,15 +72,15 @@ exports.createCourse = async (req, res) => {
         }, {new: true});
 
         //add course to model
-        await Tag.create(userId,{
-            $push: {
-                course: newCourse._id,                
-            }
-        });
-
+        // await Tag.create(userId,{
+        //     $push: {
+        //         course: newCourse._id,                
+        //     }
+        // });
+        console.log("I'm before 200")
         //return response
         res.status(200).json({
-            success: false,
+            success: true,
             message: "New course added"
         })
     }

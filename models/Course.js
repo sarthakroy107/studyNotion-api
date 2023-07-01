@@ -9,12 +9,12 @@ const courseSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    instructor: {
+    educator: {
         type:mongoose.Schema.Types.ObjectId,
         ref:"User",
         required:true,
     },
-    whatWillyouLearn: {
+    whatWillYouLearn: {
         type: String,
         required: true
     },
@@ -31,22 +31,23 @@ const courseSchema = new mongoose.Schema({
         }
     ],
     price: {
-        type: Number,
-
+        type: String,
+        required: true,
     },
     thumbnail:{
         type:String,
+        required: true,
     },
     tag: {
         type: [String],
     },
     category: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Category"
+        ref: "Category",
+        required: true,
     },
     studentsEnrolled: [{
         type:mongoose.Schema.Types.ObjectId,
-        required:true,
         ref:"User",
     }]
 });

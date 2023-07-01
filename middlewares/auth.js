@@ -6,8 +6,8 @@ exports.auth = async (req, res, next) => {
     try {
         // console.log("I'm here");
         //extract token
-        const token =req.cookies.token || req.body.token || req.header("Authorization").replace("Bearer ", "");
-        console.log(token);
+        const token = req.cookies.token || req.body.token || req.header("Authorization").replace("Bearer ", "");
+        console.log("from coikies: " + req.cookies.token);
         //check if token is available or not
         if(!token) {
             return res.status(400).json({
@@ -58,10 +58,10 @@ exports.isStudent = async (req, res) => {
 }
 
 //Educator route
-exports.isEducator = async (req, res) => {
+exports.isEducator = async (req, res, next) => {
     try {
         if(req.user.role !== "educator") {
-            return res.status(400).json({
+            return res.status(500).json({
                 success: false,
                 message: "This routed is resticed for educator"
             })
@@ -71,7 +71,7 @@ exports.isEducator = async (req, res) => {
     catch{
         return res.status(402).json({
             success: false,
-            message: "User role can not be verified"
+            message: "User role can not be verified, educator"
         })
     }
 }
@@ -91,7 +91,7 @@ exports.isAdmin = async (req, res, next) => {
     catch(err){
         return res.status(402).json({
             success: false,
-            message: "User role can not be verified"
+            message: "User role can not be verified, admin"
         })
     }
 }
