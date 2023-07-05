@@ -108,7 +108,7 @@ exports.signup = async (req, res) => {
             email, 
             role, 
             password: hashedPassword,
-            profile: (await profileDetails._id),
+            profile: (profileDetails._id),
             image: `https://api.dicebear.com/5.x/initials/svg?seed=${firstname} ${lastname}`,
         });
         console.log(`User created successfully: ${createUser}`);

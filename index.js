@@ -14,7 +14,7 @@ const {cloudinaryConnect} = require("./config/cloudinary");
 const fileUpload = require("express-fileupload");
 require("dotenv").config();
 
-const PORT = 6969
+const PORT = 6970
 
 app.use(express.json());
 app.use(cookieParser());

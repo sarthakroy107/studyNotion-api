@@ -10,14 +10,13 @@ require("dotenv").config();
 exports.createCourse = async (req, res) => {
     try {
         //fetch data
-        let { coursename, coursedescription, whatWillYouLearn, price, category } = req.body;
+        let { coursename, coursedescription, whatWillYouLearn, price, category, numberOfStudents } = req.body;
         
         //fetch thumbmail
         const tumbnail = req.files.thumbNailImage;
 
         //fetch user id from cookie
         const userId = req.user.id;
-        console.log("I'mm here")
         //find educator details from userId
         const educatorDetails = await User.findById(userId);
         if(!educatorDetails) {
@@ -26,6 +25,10 @@ exports.createCourse = async (req, res) => {
                 message: "User not found, what the fuck"
             })
         }
+        if(!numberOfStudents) {
+            numberOfStudents = "0"
+        }
+        const num = parseInt(numberOfStudents);
         //check if th tag is valid or not
         // const tagDetails = await Tag.findById(tag);
         // if(!tagDetails) {
@@ -47,29 +50,38 @@ exports.createCourse = async (req, res) => {
         }
         const categoryDetails = await Category.findById(category);
         //make entry to db
-        console.log(coursename)
-        console.log(coursedescription)
-        console.log(whatWillYouLearn)
-        console.log(price)
-        console.log("Category: " + categoryDetails._id)
-        console.log("Thumbnail: " + thumbNailImageUrl.secure_url)
-        console.log("Educator: " +  educatorDetails._id)
-        const newCourse = await Course.create({
-            coursename,
-            coursedescription,
-            whatWillYouLearn,
-            price: price,
-            educator: educatorDetails._id,
-            thumbnail: thumbNailImageUrl.secure_url,
-            category: categoryDetails._id,
-
-        })
+        let newCourse
+        try{
+            newCourse = await Course.create({
+                coursename,
+                coursedescription,
+                whatWillYouLearn,
+                price: price,
+                educator: educatorDetails._id,
+                thumbnail: thumbNailImageUrl.secure_url,
+                category: categoryDetails._id,
+                numberOfStudents: num
+    
+            })
+        }
+        catch(err) {
+            return res.status(403).json({
+                success: false,
+                message: "Error in db"
+            })
+        }
+        console.log("after db")
         //add course to User model
         await User.findByIdAndUpdate(userId, {
             $push: {
                 courses: newCourse._id
             }
         }, {new: true});
+        await Category.findByIdAndUpdate(categoryDetails._id, {
+            $push: {
+                course: newCourse._id
+            }
+        })
 
         //add course to model
         // await Tag.create(userId,{
@@ -116,29 +128,19 @@ exports.showAllCourrses = async (req, res) => {
 exports.getCourseDetails = async (req, res) =>{
     try {
         //fetch courseId
-        const {courseId} = req.body;
+        const { courseId } = req.body;
         //get all the details
-        const courseDetails = Course.findById({_id: courseId}).populate(
-            {
-                path: "instructor",
-                populate: {
-                     path: profile
-                }
-            }
-        ).populate("category").populate({
-            path: courseSection,
-            populate: {
-                path: subSection,
-            }
-        }).exec();
-        //validation
+        console.log("Before course details, ID: " + courseId)
+
+        const courseDetails = await Course.findById(courseId)
+        console.log(courseDetails)
         if(!courseDetails) {
             return res.status(404).json({
                 success: false,
                 message: "Course details not found /controllers/Course/getAllDetails"
             });
         }
-
+        console.log("After course details")
         return res.status(200).json({
             success: true,
             message: "All course details fetched successfully /controller/Course/getAllDetails",

@@ -1,4 +1,5 @@
 const Category = require("../models/Category");
+const Course = require("../models/Course");
 
 //createCategory
 exports.createCategory = async (req, res) => {
@@ -38,21 +39,26 @@ exports.categoryPageDetails = async (req, res) => {
             //get categoryId
             const {categoryId} = req.body;
             //get courses for specified categoryId
-            const selectedCategory = await Category.findById(categoryId)
-                                            .populate("courses")
-                                            .exec();
-            //validation
-            if(!selectedCategory) {
+            // const selectedCategory = await Category.findById(categoryId)
+            //                                 .populate("course")
+            //                                 .exec();
+
+            // const topCourses = await Category.findById(categoryId).limit(3).populate("course").sort({ numberOfStudents: -1}).exec();
+            // const newCourses = await Category.findById(categoryId).limit(3).populate("course").sort({createdAt: -1}).exec();
+
+            const topCourses = await Course.find({category: categoryId}).sort({numberOfStudents: -1}).limit(3)
+            const newCourses = await Course.find({category: categoryId}).sort({createdAt: 1}).limit(3)
+            if(!topCourses) {
                 return res.status(404).json({
                     success:false,
-                    message:'Data Not Found',
+                    message:'Top courses data Not Found',
                 });
             }
             //get coursesfor different categories
             const differentCategories = await Category.find({
                                          _id: {$ne: categoryId},
                                          })
-                                         .populate("courses")
+                                         .populate("course")
                                          .exec();
 
             //get top 10 selling courses
@@ -62,8 +68,9 @@ exports.categoryPageDetails = async (req, res) => {
             return res.status(200).json({
                 success:true,
                 data: {
-                    selectedCategory,
                     differentCategories,
+                    topCourses,
+                    newCourses
                 },
             });
 

@@ -6,7 +6,8 @@ exports.auth = async (req, res, next) => {
     try {
         // console.log("I'm here");
         //extract token
-        const token = req.cookies.token || req.body.token || req.header("Authorization").replace("Bearer ", "");
+        const token = req.cookies.token || localStorage.getItem("token") || 
+                      req.body.token || req.header("Authorization").replace("Bearer ", "");
         console.log("from coikies: " + req.cookies.token);
         //check if token is available or not
         if(!token) {

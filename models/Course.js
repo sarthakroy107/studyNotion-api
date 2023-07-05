@@ -49,7 +49,14 @@ const courseSchema = new mongoose.Schema({
     studentsEnrolled: [{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User",
-    }]
+    }],
+    numberOfStudents: {
+        type: Number,
+        default: 0,
+    },
+    totalRating: {
+        type: String,
+    }
 });
 
 module.exports = mongoose.model("Course", courseSchema);
