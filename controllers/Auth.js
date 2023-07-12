@@ -133,7 +133,7 @@ exports.login = async (req, res) => {
         const {email, password} = req.body;
 
         //check if user does not exist
-        const checkUser = await User.findOne({email});
+        const checkUser = await User.findOne({email}).populate("profile").exec();
         if(!checkUser) {
             return res.status(500).json({
                 success: false,

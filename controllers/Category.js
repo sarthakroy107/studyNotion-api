@@ -47,7 +47,7 @@ exports.categoryPageDetails = async (req, res) => {
             // const newCourses = await Category.findById(categoryId).limit(3).populate("course").sort({createdAt: -1}).exec();
 
             const topCourses = await Course.find({category: categoryId}).sort({numberOfStudents: -1}).limit(3)
-            const newCourses = await Course.find({category: categoryId}).sort({createdAt: 1}).limit(3)
+            const newCourses = await Course.find({category: categoryId}).sort({createdAt: -1}).limit(3)
             if(!topCourses) {
                 return res.status(404).json({
                     success:false,

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Course = require("../models/Course");
 const User = require("../models/User");
-const Tag = require("../models/Tags");
+const RatingAndReview = require("../models/RatingAndReview")
 const Category = require("../models/Category")
 const { uploadImageToCloudinary } = require("../utilis/imageUploader");
 require("dotenv").config();
@@ -130,21 +130,28 @@ exports.getCourseDetails = async (req, res) =>{
         //fetch courseId
         const { courseId } = req.body;
         //get all the details
-        console.log("Before course details, ID: " + courseId)
 
-        const courseDetails = await Course.findById(courseId)
-        console.log(courseDetails)
+        const courseDetails = await Course.findById(courseId).populate({
+            path: "educator",
+            select: "firstname lastname image"
+        })
+        //console.log(courseDetails)
         if(!courseDetails) {
             return res.status(404).json({
                 success: false,
                 message: "Course details not found /controllers/Course/getAllDetails"
             });
         }
-        console.log("After course details")
+        const avgRating = await RatingAndReview.aggregate([{
+            $group:{ _id: courseId, avgR: {$avg:"$rating"}}
+        }])
+        const allDetails = {
+            courseDetails, avgRating
+        }
         return res.status(200).json({
             success: true,
             message: "All course details fetched successfully /controller/Course/getAllDetails",
-            data: courseDetails
+            data: allDetails
         })
     }
     catch(err) {
@@ -168,7 +175,7 @@ exports.getAllCourses = async (req, res) => {
 				studentsEnrolled: true,
 			}
 		)
-			.populate("instructor")
+			.populate("educator")
 			.exec();
 		return res.status(200).json({
 			success: true,

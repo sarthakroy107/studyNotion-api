@@ -3,15 +3,19 @@ const mongoose = require("mongoose");
 const profileSchema = new mongoose.Schema({
     gender: {
         type: String,
+        default: null
     },
     dateOfBirth: {
-        type: String
+        type: String,
+        default: null
     },
     mobileNumber: {
-        type: String
+        type: Number,
+        default: null
     },
     about: {
-        type: String
+        type: String,
+        default: null
     }
 });
 

@@ -9,6 +9,8 @@ const RatingAndReviewSchema = new mongoose.Schema({
     rating: {
         type:Number,
         required:true,
+        min: 1,
+        max: 5
     },
     review:{
         type:String,
@@ -19,6 +21,10 @@ const RatingAndReviewSchema = new mongoose.Schema({
         ref: "Course",
         required: true,
         index: true,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
     }
 });
 

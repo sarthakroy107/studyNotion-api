@@ -56,7 +56,17 @@ const courseSchema = new mongoose.Schema({
     },
     totalRating: {
         type: String,
-    }
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+        required: true,
+    },
+    lastEdited: {
+        type:Date,
+        default: Date.now,
+        required: true,
+    },
 });
 
 module.exports = mongoose.model("Course", courseSchema);

@@ -6,9 +6,7 @@ exports.auth = async (req, res, next) => {
     try {
         // console.log("I'm here");
         //extract token
-        const token = req.cookies.token || localStorage.getItem("token") || 
-                      req.body.token || req.header("Authorization").replace("Bearer ", "");
-        console.log("from coikies: " + req.cookies.token);
+        const token = req.cookies.token || req.body.token || req.header("Authorization").replace("Bearer ", "");
         //check if token is available or not
         if(!token) {
             return res.status(400).json({
@@ -19,14 +17,12 @@ exports.auth = async (req, res, next) => {
         //verify the token
         try {
             const decode = jwt.verify(token, process.env.JWT_SECRET);
-            console.log(decode)
-            console.log(`Decoded information from cookie is: ${decode}`);
             req.user = decode;
         }
         catch(err) {
             return res.status(401).json({
                 success: false,
-                message: "Problem while verifing the token, /middlewares/auth"
+                message: "Problem while verifing the token in try block, /middlewares/auth"
             });
         }
         next();
@@ -40,7 +36,7 @@ exports.auth = async (req, res, next) => {
 }
 
 //Student route
-exports.isStudent = async (req, res) => {
+exports.isStudent = async (req, res, next) => {
     try {
         if(req.user.role !== "student") {
             return res.status(400).json({

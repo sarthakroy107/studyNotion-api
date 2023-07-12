@@ -95,6 +95,7 @@ exports.getAllUserDetails = async (req, res) => {
         const userId = req.user.id;
         console.log("userId: " + userId)
         const allDetails = await User.findOne({_id: userId}).populate("profile").exec();
+        
         return res.status(200).json({
             success: true,
             message: "All profile details fetched",

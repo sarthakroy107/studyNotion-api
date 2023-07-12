@@ -6,9 +6,12 @@ const { default: mongoose } = require("mongoose");
 exports.createRatingAndReview = async (req, res) => {
     try {
         const userId = req.user.id;
+        
         const {courseId, rating, review} = req.body;
-        const courseDetails = await Course.findOne({_id: courseId, 
-            studentsEnrolled: {$elemMatch: {$eq: userId} } });
+        const courseDetails = await Course.findOne(
+            {_id:courseId,
+            studentsEnrolled: {$elemMatch: {$eq: userId} },
+        });
         //will find the course details and user is enrolled or not with userId in the course.
         if(!courseDetails) {
             return res.status(402).json({
@@ -16,7 +19,7 @@ exports.createRatingAndReview = async (req, res) => {
                 message: "User is not enrolled"
             })
         }
-        const alreadyReviewed = await RatingAndReview.findById({
+        const alreadyReviewed = await RatingAndReview.findOne({
             user: userId, course:courseId,
         })
         if(alreadyReviewed) {
@@ -30,7 +33,8 @@ exports.createRatingAndReview = async (req, res) => {
             course:courseId,
             user:userId,
         });
-        const updatedCourseDetails = await Course.findByIdAndUpdate({_id:courseId},
+        console.log("Rating created")
+        const updatedCourseDetails = await Course.findByIdAndUpdate(courseId,
             {
                 $push: {
                     ratingAndReviews: ratingReview._id,
