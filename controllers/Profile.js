@@ -40,7 +40,9 @@ exports.updateProfile = async (req, res) => {
     try {
         //fetch data
         const userId = req.user.id;
-        const {dateOfBirth, about, mobileNumber,gender} = req.body;
+        const {firstname, lastname, dateOfBirth, about, mobileNumber,gender} = req.body;
+        console.log("req.body")
+        console.log(firstname)
         //update profile
         const userH = await User.findById(userId);
 
@@ -49,8 +51,13 @@ exports.updateProfile = async (req, res) => {
             dateOfBirth: dateOfBirth,
             mobileNumber: mobileNumber,
             about: about,
-        });
+        }, {new: true});
+        const userChange = await User.findByIdAndUpdate(userId, {
+            firstname: firstname,
+            lastname: lastname,
+        })
         console.log(newData);
+        console.log(userChange)
         return res.status(200).json({
             success: true,
             message: "Profile updated.",
