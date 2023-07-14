@@ -55,6 +55,7 @@ exports.capturePayment = async (req, res) => {
 //verify signature of Razorpay and server
 
 exports.verifySignature = async (req, res) => {
+    console.log("IN VERIFY SIGNATURE")
     const webhookSecret = "28052003";
 
     const signature = req.headers["x-razorpay-signature"];
