@@ -70,48 +70,50 @@ exports.verifySignature = async (req, res) => {
         console.log(req.body.payload.payment.entity.notes)
         console.log(courseId)
         console.log(userId)
-        try {
-            //find course and add student in course
-            const enrolledCourse = await Course.findByIdAndUpdate(courseId, {
-                $push: {
-                    studentsEnrolled: userId,
-                }
-            }, {new: true});
-            console.log(enrolledCourse)
-            if(!enrolledCourse) {
-                return res.status(402).status({
-                    success: false,
-                    message: "Course not found /controllers/Payment"
-                })
-            }
-            //add course to student model
-            const enrolledStudents = await User.findByIdAndUpdate(userId, {
-                $push: {
-                    courses: courseId,
-                }
-            }, {new: true});
-
-            console.log(enrolledStudents); 
+        for(const course of courseId) {
             try {
-                const emailResponse = await mailSender(enrolledStudents.email,
-                    "Congratulations from Sarthak", "Congratulations, you are onboarded into new CodeHelp Course");
-            }catch(err) {
-                return res.status(401).json({
-                    success: false,
-                    messaage: "Problem in sending mail in verifySignature"
+                //find course and add student in course
+                const enrolledCourse = await Course.findByIdAndUpdate(course, {
+                    $push: {
+                        studentsEnrolled: userId,
+                    }
+                }, {new: true});
+                console.log(enrolledCourse)
+                if(!enrolledCourse) {
+                    return res.status(402).status({
+                        success: false,
+                        message: "Course not found /controllers/Payment"
+                    })
+                }
+                //add course to student model
+                const enrolledStudents = await User.findByIdAndUpdate(userId, {
+                    $push: {
+                        courses: courseId,
+                    }
+                }, {new: true});
+    
+                console.log(enrolledStudents); 
+                try {
+                    const emailResponse = await mailSender(enrolledStudents.email,
+                        "Congratulations from Sarthak", "Congratulations, you are onboarded into new CodeHelp Course");
+                }catch(err) {
+                    return res.status(401).json({
+                        success: false,
+                        messaage: "Problem in sending mail in verifySignature"
+                    })
+                }
+                console.log("Successful verification")
+                return res.status(200).json({
+                    success: true,
+                    messaage: "Signature verified and student enrolled in course!"
                 })
             }
-            console.log("Successful verification")
-            return res.status(200).json({
-                success: true,
-                messaage: "Signature verified and student enrolled in course!"
-            })
-        }
-        catch(err) {
-            return res.status(500).json({
-                success: false,
-                messaage: "Something went wrong in verifySignature /controllers/Payment"
-            })
+            catch(err) {
+                return res.status(500).json({
+                    success: false,
+                    messaage: "Something went wrong in verifySignature /controllers/Payment"
+                })
+            }
         }
     }
     else {
