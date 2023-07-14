@@ -70,7 +70,9 @@ exports.verifySignature = async (req, res) => {
         console.log(req.body.payload.payment.entity.notes)
         console.log(courseId)
         console.log(userId)
-        for(const course of courseId) {
+        const courses = JSON.parse(courseId)
+        for(const course of courses) {
+            console.log(course)
             try {
                 //find course and add student in course
                 const enrolledCourse = await Course.findByIdAndUpdate(course, {
