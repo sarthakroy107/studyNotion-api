@@ -72,9 +72,16 @@ exports.verifySignature = async (req, res) => {
         console.log(userId)
         const courses = JSON.parse(courseId)
         for(const course of courses) {
-            console.log(course)
+            console.log("HELLO")
             try {
+                console.log("Course:" + course)
+                
                 //find course and add student in course
+                const enrolledStudents = await User.findByIdAndUpdate(userId, {
+                    $push: {
+                        courses: course,
+                    }
+                }, {new: true});
                 const enrolledCourse = await Course.findByIdAndUpdate(course, {
                     $push: {
                         studentsEnrolled: userId,
@@ -87,23 +94,18 @@ exports.verifySignature = async (req, res) => {
                         message: "Course not found /controllers/Payment"
                     })
                 }
-                //add course to student model
-                const enrolledStudents = await User.findByIdAndUpdate(userId, {
-                    $push: {
-                        courses: courseId,
-                    }
-                }, {new: true});
     
                 console.log(enrolledStudents); 
-                try {
-                    const emailResponse = await mailSender(enrolledStudents.email,
-                        "Congratulations from Sarthak", "Congratulations, you are onboarded into new CodeHelp Course");
-                }catch(err) {
-                    return res.status(401).json({
-                        success: false,
-                        messaage: "Problem in sending mail in verifySignature"
-                    })
-                }
+                console.log("Before end")
+                // try {
+                //     const emailResponse = await mailSender(enrolledStudents.email,
+                //         "Congratulations from Sarthak", "Congratulations, you are onboarded into new CodeHelp Course");
+                // }catch(err) {
+                //     return res.status(401).json({
+                //         success: false,
+                //         messaage: "Problem in sending mail in verifySignature"
+                //     })
+                // }
                 console.log("Successful verification")
                 return res.status(200).json({
                     success: true,
