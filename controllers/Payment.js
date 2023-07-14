@@ -2,7 +2,8 @@ const { default: mongoose } = require("mongoose");
 const {instance} = require("../config/razorpay");
 const Course = require("../models/Course");
 const User = require("../models/User");
-const mailSender = require("../utilis/mailSender")
+const mailSender = require("../utilis/mailSender");
+const crypto = require("crypto");
 
 //capture the payment and initiate the order
 exports.capturePayment = async (req, res) => {
