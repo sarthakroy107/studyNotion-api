@@ -6,83 +6,49 @@ const mailSender = require("../utilis/mailSender")
 
 //capture the payment and initiate the order
 exports.capturePayment = async (req, res) => {
-    try {
-        //get course details
-        const {courseId} = req.body;
-        const userId = req.user.id;
-        //validate courseId
-        if(!courseId) {
-            return res.status(404).json({
-                success: false,
-                message: "Course id not present."
-            })
-        }
-        let course;
-        try {
-            //check if course exist or not
-            course = await Course.findById(courseId);
+    const {courses} = req.body;
+    const userId = req.user.id
+    if(courses.length === 0) {
+        return res.json({success:false, message:"Please provide Course Id"});
+    }
+    let totalAmount = 0;
+    console.log(courses)
+    for(const course_id of courses) {
+        let course
+        try{
+            console.log(course_id)
+            course = await Course.findById(course_id);
             if(!course) {
-                return res.status(404).json({
-                    success: false,
-                    message: "Course id does not match."
-                });
+                return res.status(200).json({success:false, message:"Could not find the course"});
             }
-            //Check if user already enrolled in this course
-            const uid = new mongoose.Types.ObjectId(user);
-            if(course.studentsEnrolled.includes(uid)){
-                return res.status(200).json({
-                    success: false,
-                    message: "User is alreay enrolled in the course."
-                })
+            console.log("UserOd: " + userId)
+            const uid  = new mongoose.Types.ObjectId(userId);
+            if(course.studentsEnrolled.includes(uid)) {
+                return res.status(200).json({success:false, message:"Student is already Enrolled"});
             }
+            console.log("After")
+            totalAmount += course.price;
+        }catch(error) {
+            console.log(error);
+            return res.status(500).json({success:false, message:error.message});
         }
-        catch(err) {
-            return res.status(402).json({
-                success: false,
-                message: "Something went wrong while fetching student ans course details in, /controllers/payment"
-            })
-        }
-        //order create
-        const amount = course.price;
-            const currency = "INR";
-        
+        const currency = "INR";
         const options = {
-            amount: amount * 100,
+            amount: totalAmount * 100,
             currency,
             receipt: Math.random(Date.now()).toString(),
-            notes:{
-                courseId: courseId,
-                userId,
-            }
-        };
+        }
         try{
-            //initiate the payment using razorpay
             const paymentResponse = await instance.orders.create(options);
-            console.log(paymentResponse);
-            //return response
-            return res.status(200).json({
+            res.status(200).json({
                 success:true,
-                courseName: course.coursename,
-                courseDescription: course.coursedescription,
-                thumbnail: course.thumbnail,
-                orderId: paymentResponse.id,
-                currency:paymentResponse.currency,
-                amount:paymentResponse.amount,
-            });
+                message:paymentResponse,
+            })
         }
         catch(error) {
             console.log(error);
-            res.json({
-                success:false,
-                message:"Could not initiate order",
-            });
+            return res.status(500).json({success:false, mesage:"Could not Initiate Order"});
         }
-    }
-    catch(err) {
-        return res.status(403).json({
-            success: false,
-            message: "Something went wrong in Payment try."
-        })
     }
 }
 
@@ -107,7 +73,7 @@ exports.verifySignature = async (req, res) => {
                     studentsEnrolled: userId,
                 }
             }, {new: true});
-            if(!enrolledStudents) {
+            if(!enrolledCourse) {
                 return res.status(402).status({
                     success: false,
                     message: "Course not found /controllers/Payment"
