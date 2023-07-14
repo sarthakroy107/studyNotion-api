@@ -41,8 +41,7 @@ exports.updateProfile = async (req, res) => {
         //fetch data
         const userId = req.user.id;
         const {firstname, lastname, dateOfBirth, about, mobileNumber,gender} = req.body;
-        console.log("req.body")
-        console.log(firstname)
+        
         //update profile
         const userH = await User.findById(userId);
 
@@ -56,12 +55,14 @@ exports.updateProfile = async (req, res) => {
             firstname: firstname,
             lastname: lastname,
         })
-        console.log(newData);
-        console.log(userChange)
+        
+        
         return res.status(200).json({
             success: true,
             message: "Profile updated.",
-            data: newData
+            data: {
+                newData, userChange
+            }
         })
     }
     catch(err) {
