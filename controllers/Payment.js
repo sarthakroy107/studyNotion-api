@@ -67,7 +67,9 @@ exports.verifySignature = async (req, res) => {
         console.log("Payment is authorized");
 
         const {courseId, userId} = req.body.payload.payment.entity.notes;
-        
+        console.log(req.body)
+        console.log(courseId)
+        console.log(userId)
         try {
             //find course and add student in course
             const enrolledCourse = await Course.findByIdAndUpdate(courseId, {
@@ -75,6 +77,7 @@ exports.verifySignature = async (req, res) => {
                     studentsEnrolled: userId,
                 }
             }, {new: true});
+            console.log(enrolledCourse)
             if(!enrolledCourse) {
                 return res.status(402).status({
                     success: false,
@@ -98,9 +101,10 @@ exports.verifySignature = async (req, res) => {
                     messaage: "Problem in sending mail in verifySignature"
                 })
             }
+            console.log("Successful verification")
             return res.status(200).json({
                 success: true,
-                messaage: "Signature varified and student enrolled in course!"
+                messaage: "Signature verified and student enrolled in course!"
             })
         }
         catch(err) {
