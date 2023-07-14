@@ -67,7 +67,7 @@ exports.verifySignature = async (req, res) => {
         console.log("Payment is authorized");
 
         const {courseId, userId} = req.body.payload.payment.entity.notes;
-        console.log(req.body.payload.payment)
+        console.log(req.body.payload.payment.entity.notes)
         console.log(courseId)
         console.log(userId)
         try {
