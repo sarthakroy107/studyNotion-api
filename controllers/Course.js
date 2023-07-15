@@ -130,7 +130,7 @@ exports.getCourseDetails = async (req, res) =>{
         //fetch courseId
         const { courseId } = req.body;
         //get all the details
-
+        console.log(courseId)
         const courseDetails = await Course.findById(courseId).populate({
             path: "educator",
             select: "firstname lastname image"
