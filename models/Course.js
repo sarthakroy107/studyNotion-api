@@ -38,6 +38,10 @@ const courseSchema = new mongoose.Schema({
         type:String,
         required: true,
     },
+    courselength:{
+        type: String,
+        required: true,
+    },
     tag: {
         type: [String],
     },
@@ -50,6 +54,10 @@ const courseSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:"User",
     }],
+    published: {
+        type: Boolean,
+        default: false,
+    },
     numberOfStudents: {
         type: Number,
         default: 0,
