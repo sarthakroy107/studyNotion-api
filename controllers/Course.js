@@ -10,8 +10,8 @@ require("dotenv").config();
 exports.createCourse = async (req, res) => {
     try {
         //fetch data
-        let { coursename, coursedescription, whatWillYouLearn, price, category, numberOfStudents } = req.body;
-        
+        let { coursename, coursedescription, courselength, whatWillYouLearn, price, category, numberOfStudents } = req.body;
+        console.log("Hello")
         //fetch thumbmail
         const tumbnail = req.files.thumbNailImage;
 
@@ -52,6 +52,7 @@ exports.createCourse = async (req, res) => {
         //make entry to db
         let newCourse
         try{
+            console.log("Before course creation")
             newCourse = await Course.create({
                 coursename,
                 coursedescription,
@@ -60,14 +61,14 @@ exports.createCourse = async (req, res) => {
                 educator: educatorDetails._id,
                 thumbnail: thumbNailImageUrl.secure_url,
                 category: categoryDetails._id,
-                numberOfStudents: num
+                courselength,
     
             })
         }
         catch(err) {
-            return res.status(403).json({
+            return res.status(401).json({
                 success: false,
-                message: "Error in db"
+                message: err
             })
         }
         console.log("after db")
@@ -93,7 +94,8 @@ exports.createCourse = async (req, res) => {
         //return response
         res.status(200).json({
             success: true,
-            message: "New course added"
+            message: "New course added",
+            data: newCourse._id
         })
     }
     catch(err) {

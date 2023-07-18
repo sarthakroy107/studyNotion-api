@@ -16,7 +16,7 @@ const courseSchema = new mongoose.Schema({
     },
     whatWillYouLearn: {
         type: String,
-        required: true
+        
     },
     courseSection: [
         {
@@ -31,7 +31,7 @@ const courseSchema = new mongoose.Schema({
         }
     ],
     price: {
-        type: String,
+        type: Number,
         required: true,
     },
     thumbnail:{
@@ -39,7 +39,7 @@ const courseSchema = new mongoose.Schema({
         required: true,
     },
     courselength:{
-        type: String,
+        type: Number,
         required: true,
     },
     tag: {
