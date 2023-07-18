@@ -6,6 +6,8 @@ exports.createSection = async (req, res) => {
     //fetch data
     try {
         const {sectionName, courseId} = req.body;
+        console.log(sectionName);
+        console.log(courseId)
         const newSection = await Section.create({sectionName});
         await Course.findByIdAndUpdate(courseId, {
             $push: {
@@ -52,11 +54,14 @@ exports.deleteSection = async (req, res) => {
     try {
         //fetch section data
         const {sectionId, courseId} = req.body;
+        console.log(sectionId)
+        console.log(courseId)
         //delete section
         await Section.findByIdAndDelete(sectionId);
         await Course.findByIdAndUpdate(courseId, {
-            $pull: sectionId,
+            $pull: {coursesection: sectionId},
         }, {new: true})
+        console.log("Here")
 
         return res.status(200).json({
             success: true,
@@ -67,6 +72,30 @@ exports.deleteSection = async (req, res) => {
         return res.status(401).json({
             success: false,
             message: "Section deletation failed."
+        })
+    }
+}
+
+//get Section details of a course
+exports.getSections = async (req, res) => {
+    try{
+        console.log("Hello")
+        const {courseId} = req.body;
+        console.log(courseId)
+
+        const response = await Course.findById(courseId).populate("courseSection").exec();
+        console.log(response)
+        
+        return res.status(200).json({
+            success: true,
+            message: "Section details fetched",
+            data: response
+        })
+    }
+    catch(err) {
+        return res.status(401).json({
+            success:false,
+            message: "Section details fetching failed"
         })
     }
 }

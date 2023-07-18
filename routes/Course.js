@@ -7,7 +7,7 @@ const router = express.Router();
 const {getCourseDetails, getAllCourses, showAllCourrses, createCourse} = require("../controllers/Course");
 
 //Section controllers
-const {createSection, updateSection, deleteSection} = require("../controllers/Section");
+const {createSection, updateSection, deleteSection, getSections} = require("../controllers/Section");
 
 //Categories controller
 const {createCategory, showAllCategories, categoryPageDetails} = require("../controllers/Category");
@@ -44,6 +44,8 @@ router.post("/addSubSection", auth, isEducator, createSubSection)
 router.get("/getAllCourses", getAllCourses)
 // Get Details for a Specific Courses
 router.post("/getCourseDetails", getCourseDetails)
+//get section names
+router.put("/getSections", getSections)
 
 
 // ********************************************************************************************************
