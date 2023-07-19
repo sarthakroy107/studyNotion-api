@@ -10,9 +10,9 @@ const subSectionSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    description: {
-        type:String,
-    },
+    // description: {
+    //     type:String,
+    // },
     videoUrl:{
         type:String,
         required: true

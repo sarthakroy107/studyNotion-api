@@ -6,20 +6,26 @@ const {uploadImageToCloudinary} = require("../utilis/imageUploader")
 exports.createSubSection = async (req, res) => {
     try {
         //fetch data
-        const {title, description, sectionId} = req.body;
+        const {title, timeDuration, sectionId} = req.body;
+        console.log(req.body)
+        console.log("Here")
+        console.log(req.files)
         const file = req.files.material; //fetching video or image file
+        
         //upload file to cloudinary
-        const url = uploadImageToCloudinary(file, {folder: process.env.THUMBNAIL_FOLDER, resource: auto});//error might happen
+        const url = await uploadImageToCloudinary(file);//error might happen
+        console.log("Hello")
+        console.log(url)
         //create entry to db
         const newSubSection = await SubSection.create({
-            title, description, videoUrl: url.secure_url
+            title, videoUrl: url.secure_url, timeDuration
         });
         await Section.findByIdAndUpdate(sectionId,{
             $push: {
                 subSection: newSubSection._id,
             }
         });
-
+        console.log("Hii")
         return res.status(200).json({
             success: true,
             message: "Sub section created."

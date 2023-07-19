@@ -82,7 +82,13 @@ exports.getSections = async (req, res) => {
         
         const {courseId} = req.body;
 
-        const response = await Course.findById(courseId).populate("courseSection").exec();
+        const response = await Course.findById(courseId).populate({
+            path: "courseSection",
+            populate: {
+                path: "subSection",
+                model: "SubSection"
+            }
+        }).exec();
         
         return res.status(200).json({
             success: true,

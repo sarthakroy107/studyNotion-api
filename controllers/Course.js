@@ -11,10 +11,11 @@ exports.createCourse = async (req, res) => {
     try {
         //fetch data
         let { coursename, coursedescription, courselength, whatWillYouLearn, price, category, numberOfStudents } = req.body;
-        console.log("Hello")
+        console.log(req.body)
+
         //fetch thumbmail
         const tumbnail = req.files.thumbNailImage;
-
+        console.log(req.files.thumbNailImage)
         //fetch user id from cookie
         const userId = req.user.id;
         //find educator details from userId
