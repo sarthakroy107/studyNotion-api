@@ -11,6 +11,10 @@ const sectionSchema = new mongoose.Schema({
             ref:"SubSection",    
         }
     ],
+    createdAt: {
+        type: Date,
+        default: Date.now()
+    }
 
 });
 

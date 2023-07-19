@@ -79,12 +79,10 @@ exports.deleteSection = async (req, res) => {
 //get Section details of a course
 exports.getSections = async (req, res) => {
     try{
-        console.log("Hello")
+        
         const {courseId} = req.body;
-        console.log(courseId)
 
         const response = await Course.findById(courseId).populate("courseSection").exec();
-        console.log(response)
         
         return res.status(200).json({
             success: true,
