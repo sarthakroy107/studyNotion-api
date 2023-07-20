@@ -43,15 +43,21 @@ exports.createSubSection = async (req, res) => {
 exports.updateSubSection = async (req, res) => {
     try {
         //fetch data
-        const {subSectionId, subSectionName, videoUrl} = req.body;
-        const file = req.files.materrial;
-        if(file) {
-            const newFile = uploadImageToCloudinary(file, {folder: process.env.THUMBNAIL_FOLDER, resource: auto});//error might happen
-            videoUrl = (await newFile).secure_url;
-        }
+        const {timeDuration, title, videoUrl, subSectionId} = req.body;
+        console.log(req.body)
+        //const file = req.files.material;
+        // if(file) {
+        //     console.log("If file")
+        //     const newFile = await uploadImageToCloudinary(file);//error might happen
+        //     console.log("HIIIIII")
+        //     videoUrl =  newFile.secure_url;
+        //     console.log("Cloudinary")
+        // }
+
         //updateData
         await SubSection.findByIdAndUpdate(subSectionId, {
-            title: subSectionName,
+            title: title,
+            timeDuration: timeDuration,
             videoUrl: videoUrl,
         });
 
@@ -74,6 +80,7 @@ exports.deleteSubSection = async (req, res) => {
     try {
         //fetch data
         const {subSectionId, sectionId} = req.body;
+        console.log(req.body)
         //delete sub section
         await SubSection.findByIdAndDelete(subSectionId);
         await Section.findByIdAndUpdate(sectionId, {
