@@ -193,3 +193,31 @@ exports.getAllCourses = async (req, res) => {
 		});
 	}
 };
+
+exports.publishCourse = async (req, res) => {
+    try {
+        const {courseId} = req.body;
+        const course = await Course.findById(courseId);
+        if(course.published) {
+            return res.status(200).json({
+                success: true,
+                message: "Course is already published",
+                data: true
+            })
+        }
+        const pub = await Course.findByIdAndUpdate(courseId, {
+            published: true
+        }, {new:true})
+        return res.status(200).json({
+            success: true,
+            message: "Course published",
+            data: pub.published
+        })
+    }
+    catch(err) {
+        return res.status(401).json({
+            success: false,
+            message: "Course publish failed"
+        })
+    }
+}

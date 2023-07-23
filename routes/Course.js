@@ -4,7 +4,7 @@ const router = express.Router();
 //Import Controllers
 
 //Course controllers
-const {getCourseDetails, getAllCourses, showAllCourrses, createCourse} = require("../controllers/Course");
+const {getCourseDetails, getAllCourses, showAllCourrses, createCourse, publishCourse} = require("../controllers/Course");
 
 //Section controllers
 const {createSection, updateSection, deleteSection, getSections} = require("../controllers/Section");
@@ -34,6 +34,8 @@ router.post("/addSection", auth, isEducator, createSection)
 router.post("/updateSection", auth, isEducator, updateSection)
 // Delete a Section
 router.post("/deleteSection", auth, isEducator, deleteSection)
+//publish course
+router.post("/publishCourse", auth, isEducator, publishCourse)
 // Edit Sub Section
 router.post("/updateSubSection", auth, isEducator, updateSubSection)
 // Delete Sub Section
