@@ -4,7 +4,8 @@ const router = express.Router();
 //Import Controllers
 
 //Course controllers
-const {getCourseDetails, getAllCourses, showAllCourrses, createCourse, publishCourse} = require("../controllers/Course");
+const {getCourseDetails, getAllCourses, showAllCourrses, createCourse, publishCourse, getMyCourses} = 
+require("../controllers/Course");
 
 //Section controllers
 const {createSection, updateSection, deleteSection, getSections} = require("../controllers/Section");
@@ -48,6 +49,8 @@ router.get("/getAllCourses", getAllCourses)
 router.post("/getCourseDetails", getCourseDetails)
 //get section names
 router.put("/getSections", getSections)
+//get my courses
+router.put("/getMyCourses", auth, isEducator, getMyCourses)
 
 
 // ********************************************************************************************************

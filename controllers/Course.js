@@ -221,3 +221,18 @@ exports.publishCourse = async (req, res) => {
         })
     }
 }
+exports.getMyCourses = async (req, res) => {
+    try {
+        const id = req.user.id
+        const user = await User.findById(id).populate("courses").exec();
+        return res.status(200).json({
+            success: true,
+            message: "Course data fetched",
+            data: user
+        })
+    }
+    catch(err) {
+        console.log(err)
+    }
+    
+}
