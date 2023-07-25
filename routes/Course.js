@@ -4,7 +4,7 @@ const router = express.Router();
 //Import Controllers
 
 //Course controllers
-const {getCourseDetails, getAllCourses, showAllCourrses, createCourse, publishCourse, getMyCourses} = 
+const {getCourseDetails, getAllCourses, showAllCourrses, createCourse, publishCourse, getMyCourses, getEnrolledCourses} = 
 require("../controllers/Course");
 
 //Section controllers
@@ -51,6 +51,8 @@ router.post("/getCourseDetails", getCourseDetails)
 router.put("/getSections", getSections)
 //get my courses
 router.put("/getMyCourses", auth, isEducator, getMyCourses)
+//get eenrolled courses
+router.post("/getEnrolledCourses", auth, getEnrolledCourses)
 
 
 // ********************************************************************************************************

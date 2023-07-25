@@ -250,3 +250,21 @@ exports.getMyCourses = async (req, res) => {
     }
     
 }
+
+exports.getEnrolledCourses = async (req, res) => {
+    try{
+        const id = req.user.id;
+        const courses = await Course.find({studentsEnrolled: id});
+        console.log(courses)
+        return res.status(200).json({
+            success: true,
+            data: courses
+        })
+    }
+    catch(err) {
+        return res.status(500).json({
+            success: false,
+            message: "Enrolled coursses data fetching failed"
+        })
+    }
+}
