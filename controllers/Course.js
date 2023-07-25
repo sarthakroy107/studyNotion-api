@@ -76,7 +76,7 @@ exports.createCourse = async (req, res) => {
         //add course to User model
         await User.findByIdAndUpdate(userId, {
             $push: {
-                courses: newCourse._id
+                myCourses: newCourse._id
             }
         }, {new: true});
         await Category.findByIdAndUpdate(categoryDetails._id, {
@@ -224,7 +224,7 @@ exports.publishCourse = async (req, res) => {
 exports.getMyCourses = async (req, res) => {
     try {
         const id = req.user.id
-        const user = await User.findById(id).populate("courses").exec();
+        const user = await User.findById(id).populate("myCourses").exec();
         return res.status(200).json({
             success: true,
             message: "Course data fetched",

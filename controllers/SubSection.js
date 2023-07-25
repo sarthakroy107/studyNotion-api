@@ -1,12 +1,13 @@
 const SubSection = require("../models/SubSection");
 const Section = require("../models/Section");
-const {uploadImageToCloudinary} = require("../utilis/imageUploader")
+const {uploadImageToCloudinary} = require("../utilis/imageUploader");
+const Course = require("../models/Course");
 
 //create subsection
 exports.createSubSection = async (req, res) => {
     try {
         
-        const {title, timeDuration, sectionId} = req.body;
+        const {title, timeDuration, sectionId, courseId} = req.body;
         console.log(req.body)
         console.log("Here")
         console.log(req.files)
@@ -25,6 +26,11 @@ exports.createSubSection = async (req, res) => {
                 subSection: newSubSection._id,
             }
         });
+        await Course.findByIdAndUpdate(courseId, {
+            $inc: {
+                lessons: 1,
+            },
+        })
         console.log("Hii")
         return res.status(200).json({
             success: true,
@@ -79,13 +85,18 @@ exports.updateSubSection = async (req, res) => {
 exports.deleteSubSection = async (req, res) => {
     try {
         //fetch data
-        const {subSectionId, sectionId} = req.body;
+        const {subSectionId, sectionId, courseId} = req.body;
         console.log(req.body)
         //delete sub section
         await SubSection.findByIdAndDelete(subSectionId);
         await Section.findByIdAndUpdate(sectionId, {
             $pull: {
                 subSection: subSectionId,
+            }
+        })
+        await Course.findByIdAndUpdate(courseId, {
+            $inc: {
+                lessons: -1,
             }
         })
         return res.status(200).json({

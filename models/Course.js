@@ -75,6 +75,10 @@ const courseSchema = new mongoose.Schema({
         default: Date.now,
         required: true,
     },
+    lessons:{
+        type: Number,
+        default: 0,
+    },
 });
 
 module.exports = mongoose.model("Course", courseSchema);

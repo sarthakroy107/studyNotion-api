@@ -46,8 +46,34 @@ exports.categoryPageDetails = async (req, res) => {
             // const topCourses = await Category.findById(categoryId).limit(3).populate("course").sort({ numberOfStudents: -1}).exec();
             // const newCourses = await Category.findById(categoryId).limit(3).populate("course").sort({createdAt: -1}).exec();
 
-            const topCourses = await Course.find({category: categoryId}).sort({numberOfStudents: -1}).limit(3)
-            const newCourses = await Course.find({category: categoryId}).sort({createdAt: -1}).limit(3)
+            const topCourses = await Course.find({category: categoryId, published: true}).sort({numberOfStudents: -1}).limit(10)
+            const newCourses = await Course.find({category: categoryId, published: true}).sort({createdAt: -1}).limit(10)
+            const avgRatings = await Course.aggregate([
+                {
+                    $match:{
+                        category: categoryId,
+                        published: true,
+                    },
+                },
+                {
+                    $unwind: "$ratingAndReviews",
+                },
+                {
+                    $group: {
+                        _id: "$_id",
+                        avgRatings: {$avg: "$ratingAndReviews.rating"}
+                    }
+                }
+            ])
+            const avgRatingsMap = new Map(avgRatings.map((course) => [course._id.toString(), course.avgRating]));
+            const topCoursesWithAvgRating = topCourses.map((course) => ({
+                ...course.toObject(),
+                avgRating: avgRatingsMap.get(course._id.toString()) || 0, // Set avgRating to 0 if not found in the map
+              }));
+              const newCoursesWithAvgRating = newCourses.map((course) => ({
+                ...course.toObject(),
+                avgRating: avgRatingsMap.get(course._id.toString()) || 0, // Set avgRating to 0 if not found in the map
+              }));
             if(!topCourses) {
                 return res.status(404).json({
                     success:false,
@@ -55,11 +81,11 @@ exports.categoryPageDetails = async (req, res) => {
                 });
             }
             //get coursesfor different categories
-            const differentCategories = await Category.find({
-                                         _id: {$ne: categoryId},
-                                         })
-                                         .populate("course")
-                                         .exec();
+            // const differentCategories = await Category.find({
+            //                              _id: {$ne: categoryId},
+            //                              })
+            //                              .populate("course")
+            //                              .exec();
 
             //get top 10 selling courses
             //HW - write it on your own
@@ -68,9 +94,8 @@ exports.categoryPageDetails = async (req, res) => {
             return res.status(200).json({
                 success:true,
                 data: {
-                    differentCategories,
-                    topCourses,
-                    newCourses
+                    topCourses: topCoursesWithAvgRating,
+                    newCourses: newCoursesWithAvgRating
                 },
             });
 

@@ -42,10 +42,16 @@ const userSchema = new mongoose.Schema({
     resetPasswordVaildTime: {
         type: Date,
     },
-    courses: [
+    enrolledCourses: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Course"
+        }
+    ],
+    myCourses: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Course",
         }
     ],
     image: {

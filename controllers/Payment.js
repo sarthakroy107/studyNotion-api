@@ -79,7 +79,7 @@ exports.verifySignature = async (req, res) => {
                 //find course and add student in course
                 const student = await User.findById(userId);
                 const uid  = new mongoose.Types.ObjectId(course);
-                if(student.courses.includes(uid)) {
+                if(student.enrolledCourses.includes(uid)) {
                     return res.status(200).json({success:false, message:"Student is already Enrolled"});
                 }
 
@@ -98,7 +98,10 @@ exports.verifySignature = async (req, res) => {
                 const enrolledCourse = await Course.findByIdAndUpdate(course, {
                     $push: {
                         studentsEnrolled: userId,
-                    }
+                    },
+                    $inc :{
+                        numberOfStudents: 1,
+                    },
                 }, {new: true});
                 console.log(enrolledCourse)
                 if(!enrolledCourse) {
