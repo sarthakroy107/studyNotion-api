@@ -134,10 +134,23 @@ exports.getCourseDetails = async (req, res) =>{
         const { courseId } = req.body;
         //get all the details
         console.log(courseId)
-        const courseDetails = await Course.findById(courseId).populate({
-            path: "educator",
-            select: "firstname lastname image"
-        })
+        const courseDetails = await Course.findById(courseId).populate([
+            {
+                path: "educator",
+                select: "firstname lastname image"
+            },
+            {
+                path: "category",
+                select: "name"
+            },
+            {
+                path: "courseSection",
+                populate: {
+                    path: "subSection"
+                }
+            }
+            
+        ])
         //console.log(courseDetails)
         if(!courseDetails) {
             return res.status(404).json({
@@ -149,7 +162,8 @@ exports.getCourseDetails = async (req, res) =>{
             $group:{ _id: courseId, avgR: {$avg:"$rating"}}
         }])
         const allDetails = {
-            courseDetails, avgRating
+            ...courseDetails.toObject(),
+            avgRating: avgRating[0].avgR
         }
         return res.status(200).json({
             success: true,

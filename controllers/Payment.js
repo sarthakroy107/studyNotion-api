@@ -92,9 +92,10 @@ exports.verifySignature = async (req, res) => {
                 
                 const enrolledStudents = await User.findByIdAndUpdate(userId, {
                     $push: {
-                        courses: course,
+                        enrolledCourses: userId,
                     }
                 }, {new: true});
+                console.log(enrolledStudents)
                 const enrolledCourse = await Course.findByIdAndUpdate(course, {
                     $push: {
                         studentsEnrolled: userId,
@@ -103,7 +104,9 @@ exports.verifySignature = async (req, res) => {
                         numberOfStudents: 1,
                     },
                 }, {new: true});
-                console.log(enrolledCourse)
+                console.log("Hello")
+                console.log(enrolledStudents)
+                console.log("Hello")
                 if(!enrolledCourse) {
                     return res.status(402).status({
                         success: false,

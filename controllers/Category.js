@@ -74,6 +74,7 @@ exports.categoryPageDetails = async (req, res) => {
                 ...course.toObject(),
                 avgRating: avgRatingsMap.get(course._id.toString()) || 0, // Set avgRating to 0 if not found in the map
               }));
+              
             if(!topCourses) {
                 return res.status(404).json({
                     success:false,
