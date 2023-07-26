@@ -4,6 +4,7 @@ const Course = require("../models/Course");
 const User = require("../models/User");
 const mailSender = require("../utilis/mailSender");
 const crypto = require("crypto");
+const CourseProgress = require("../models/CourseProgress");
 
 //capture the payment and initiate the order
 exports.capturePayment = async (req, res) => {
@@ -27,7 +28,7 @@ exports.capturePayment = async (req, res) => {
             if(course.studentsEnrolled.includes(uid)) {
                 return res.status(200).json({success:false, message:"Student is already Enrolled"});
             }
-            console.log("After")
+            console.log("After last")
             totalAmount += course.price;
         }catch(error) {
             console.log(error);
@@ -67,35 +68,39 @@ exports.verifySignature = async (req, res) => {
         console.log("Payment is authorized");
 
         const {courseId, userId} = req.body.payload.payment.entity.notes;
-        console.log(req.body.payload.payment.entity.notes)
-        console.log(courseId)
-        console.log(userId)
+        // console.log(req.body.payload.payment.entity.notes)
+        // console.log(courseId)
+        // console.log(userId)
         const courses = JSON.parse(courseId)
         for(const course of courses) {
-            console.log("HELLO")
             try {
-                console.log("Course:" + course)
+                //console.log("Course:" + course)
                 
                 //find course and add student in course
                 const student = await User.findById(userId);
                 const uid  = new mongoose.Types.ObjectId(course);
+                console.log("KCbhsdbcibsdicbsdihcbihsdbcjhbsdhicbhdscbhsdbhkcbhksdbckhsdbk")
+                console.log("UID: ")
+                console.log(uid)
                 if(student.enrolledCourses.includes(uid)) {
                     return res.status(200).json({success:false, message:"Student is already Enrolled"});
                 }
 
                 const courseSarthak = await Course.findById(course);
                 const cid  = new mongoose.Types.ObjectId(student);
+                console.log("CID: ")
+                console.log(cid)
                 if(courseSarthak.studentsEnrolled.includes(cid)) {
                     return res.status(200).json({success:false, message:"Student is already Enrolled"});
                 }
-                console.log("After my code")
-                
+
+
                 const enrolledStudents = await User.findByIdAndUpdate(userId, {
                     $push: {
                         enrolledCourses: userId,
                     }
                 }, {new: true});
-                console.log(enrolledStudents)
+
                 const enrolledCourse = await Course.findByIdAndUpdate(course, {
                     $push: {
                         studentsEnrolled: userId,
@@ -104,18 +109,27 @@ exports.verifySignature = async (req, res) => {
                         numberOfStudents: 1,
                     },
                 }, {new: true});
-                console.log("Hello")
-                console.log(enrolledStudents)
-                console.log("Hello")
+
                 if(!enrolledCourse) {
                     return res.status(402).status({
                         success: false,
                         message: "Course not found /controllers/Payment"
                     })
                 }
-    
-                console.log(enrolledStudents); 
-                console.log("Before end")
+
+                const courseProgress = await CourseProgress.create({
+                    userId: enrolledStudents._id,
+                    courseId: courseSarthak._id,
+                })
+                console.log("After course progress")
+
+                if(!courseProgress) {
+                    return res.status(403).json({
+                        success:false,
+                        mesage: true
+                    })
+                }
+
                 try {
                     const emailResponse = await mailSender(enrolledStudents.email,
                         "Congratulations from Sarthak", "Congratulations, you are onboarded into new CodeHelp Course");

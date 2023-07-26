@@ -4,6 +4,7 @@ const User = require("../models/User");
 const RatingAndReview = require("../models/RatingAndReview")
 const Category = require("../models/Category")
 const { uploadImageToCloudinary } = require("../utilis/imageUploader");
+const SubSection = require('../models/SubSection');
 require("dotenv").config();
 
 //Create course
@@ -254,8 +255,12 @@ exports.getMyCourses = async (req, res) => {
 exports.getEnrolledCourses = async (req, res) => {
     try{
         const id = req.user.id;
-        const courses = await Course.find({studentsEnrolled: id});
-        console.log(courses)
+        const courses = await Course.find({studentsEnrolled: id}).populate({
+            path: "educator",
+            select: "firstname lastname"
+        });
+        
+        
         return res.status(200).json({
             success: true,
             message: "Data fetching succesfull",
